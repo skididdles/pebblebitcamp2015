@@ -2,11 +2,11 @@
 <items version="2" >
 
     <item
-        jar="/home/nulp/AndroidStudioProjects/PebbleStuff/app/build/intermediates/exploded-aar/com.getpebble/pebblekit/2.6.0/classes.jar"
+        jar="/home/gaurav/AndroidStudioProjects/bitcamp/pebblebitcamp2015/app/build/intermediates/exploded-aar/com.getpebble/pebblekit/2.6.0/classes.jar"
         jumboMode="false"
         revision="20.0.0"
         sha1="660dc1d342b8e31da1cc51e79c66d636a77a1e98">
-        <dex dex="/home/nulp/AndroidStudioProjects/PebbleStuff/app/build/intermediates/pre-dexed/debug/classes-1d8cfd00f4e6be726737287cd812a02e97395648.jar" />
+        <dex dex="/home/gaurav/AndroidStudioProjects/bitcamp/pebblebitcamp2015/app/build/intermediates/pre-dexed/debug/classes-9dbbc3ec4b7e2a8ca044dfc48695fa7a2813fdac.jar" />
     </item>
 
 </items>

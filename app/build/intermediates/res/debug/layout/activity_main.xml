@@ -41,6 +41,12 @@
         android:layout_below="@+id/y"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+    <!--
+        <com.example.nulp.pebblestuff.PicFinally
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+          -->
 
 </RelativeLayout>
-<!-- From: file:/home/nulp/AndroidStudioProjects/PebbleStuff/app/src/main/res/layout/activity_main.xml -->
+<!-- From: file:/home/gaurav/AndroidStudioProjects/bitcamp/pebblebitcamp2015/app/src/main/res/layout/activity_main.xml -->
