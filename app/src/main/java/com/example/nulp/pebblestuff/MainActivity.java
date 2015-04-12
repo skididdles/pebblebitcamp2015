@@ -25,7 +25,9 @@ import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -169,6 +171,35 @@ public class MainActivity extends Activity {
             mBluetoothAdapter.disable();
         }
     }
+
+
+    public int tryConnection(String host,int port) {
+        Socket socket = new Socket();
+        try {
+
+            byte buf[] = new byte[1024];
+            socket.bind(null);
+            socket.connect((new InetSocketAddress(host, 8888)), 500);
+            Log.d("Client", "tries to connect");
+
+        }
+        catch(Exception e) {
+            return -1;
+        }
+        finally {
+            if (socket != null) {
+                if (socket.isConnected()) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        //catch logic
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
 
     public void listenConnection() {
         try {
