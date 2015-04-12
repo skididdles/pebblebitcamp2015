@@ -1,7 +1,10 @@
 package com.example.nulp.pebblestuff;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -19,8 +22,10 @@ import java.util.UUID;
 public class MainActivity extends Activity {
 
     private PebbleKit.PebbleDataReceiver dataReceiver;
+    private GLSurfaceView mGLView;
     private int appData[] = new int[3];
     private PicFinally mypic;
+    /*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +38,18 @@ public class MainActivity extends Activity {
         Log.d("app","got here");
 
     }
+    */
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Create a GLSurfaceView instance and set it
+        // as the ContentView for this Activity.
+        mGLView = new GLSurfaceView(this);
+        setContentView(mGLView);
+    }
+
 
     @Override
     protected void onPause() {
@@ -68,7 +85,6 @@ public class MainActivity extends Activity {
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
 
 
-
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -80,7 +96,7 @@ public class MainActivity extends Activity {
                         appData[2] = data.getInteger(3).intValue();
 
                         double distance = 0.5 * (double) (appData[0]) * (0.2 * 0.2);
-                        Log.d("Printing?" , Double.toString(distance));
+                        Log.d("Printing?", Double.toString(distance));
                         //mypic.updatePos((int)distance,0);
                         Log.i("something", "Recieved data");
                         PebbleKit.sendAckToPebble(context, transactionId);
@@ -109,7 +125,7 @@ public class MainActivity extends Activity {
         EditText zbox = (EditText) findViewById(R.id.z);
         zbox.setText(Integer.toString(appData[2]));
         */
-        Log.i("something","in update");
+        Log.i("something", "in update");
 
     }
 
@@ -133,5 +149,13 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onDestroy() {
+
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter.isEnabled()) {
+            mBluetoothAdapter.disable();
+        }
     }
 }
