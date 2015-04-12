@@ -2,8 +2,15 @@ package com.example.nulp.pebblestuff;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pConfig;
+import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pInfo;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,18 +24,39 @@ import com.getpebble.android.kit.Constants;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class MainActivity extends Activity {
 
+    private final IntentFilter intentFilter =  new IntentFilter();;
     private PebbleKit.PebbleDataReceiver dataReceiver;
-    private GLSurfaceView mGLView;
     private int appData[] = new int[3];
     private PicFinally mypic;
-    /*
+    public WifiP2pManager mManager;
+    private WifiP2pManager.Channel mChannel;
+    public BroadcastReceiver broadcastreceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mManager.initialize(getApplicationContext(),getMainLooper(),null);
+        //////////////////////////p2p stuff
+        //  Indicates a change in the Wi-Fi P2P status.
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        // Indicates a change in the list of available peers.
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        // Indicates the state of Wi-Fi P2P connectivity has changed.
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        // Indicates this device's details have changed.
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+        //////////////////////////p2p stuff
+
         mypic = new PicFinally(getApplicationContext());
         setContentView(mypic);
         boolean connected = PebbleKit.isWatchConnected(getApplicationContext());
@@ -37,17 +65,19 @@ public class MainActivity extends Activity {
         PebbleKit.startAppOnPebble(getApplicationContext(), UUID.fromString("273761EB-97DC-4F08-B353-3384A2170902"));
         Log.d("app","got here");
 
-    }
-    */
+        mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                //make socket
+                listenConnection();
+            }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+            @Override
+            public void onFailure(int reasonCode) {
 
-        // Create a GLSurfaceView instance and set it
-        // as the ContentView for this Activity.
-        mGLView = new GLSurfaceView(this);
-        setContentView(mGLView);
+            }
+        });
+
     }
 
 
@@ -65,8 +95,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        updateUi();
 
         // In order to interact with the UI thread from a broadcast receiver, we need to perform any updates through
         // an Android handler. For more information, see: http://developer.android.com/reference/android/os/Handler.html
@@ -97,37 +125,20 @@ public class MainActivity extends Activity {
 
                         double distance = 0.5 * (double) (appData[0]) * (0.2 * 0.2);
                         Log.d("Printing?", Double.toString(distance));
-                        //mypic.updatePos((int)distance,0);
+
                         Log.i("something", "Recieved data");
                         PebbleKit.sendAckToPebble(context, transactionId);
 
                         Log.i(getLocalClassName(), "In thread");
-                        updateUi();
 
                     }
                 });
-
 
             }
         };
         PebbleKit.registerReceivedDataHandler(this, dataReceiver);
     }
 
-    // Update the Activity with the data for a given hole
-    public void updateUi() {
-        /*
-        EditText xbox = (EditText) findViewById(R.id.x);
-        xbox.setText(Integer.toString(appData[0]));
-
-        EditText ybox = (EditText) findViewById(R.id.y);
-        ybox.setText(Integer.toString(appData[1]));
-
-        EditText zbox = (EditText) findViewById(R.id.z);
-        zbox.setText(Integer.toString(appData[2]));
-        */
-        Log.i("something", "in update");
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -143,7 +154,7 @@ public class MainActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        //noinsp {ection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -158,4 +169,25 @@ public class MainActivity extends Activity {
             mBluetoothAdapter.disable();
         }
     }
+
+    public void listenConnection() {
+        try {
+            ServerSocket serverSocket = new ServerSocket(8888);
+            Socket client = serverSocket.accept();
+            InputStream inputstream = client.getInputStream();
+            Log.d("Client message: ", inputstream.toString());
+            serverSocket.close();
+        }
+        catch(Exception e) {
+
+        }
+
+    }
+
+
 }
+
+
+
+
+
